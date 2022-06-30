@@ -11,6 +11,7 @@
 	<groupId>mx.com.lestradam.covid</groupId>
 	<artifactId>vaccination-sites</artifactId>
 	<version>0.0.1</version>
+	<packaging>jar</packaging>
 	<name>vaccination-sites</name>
 	<description>Spring batch project to retrieve coordinates from xlsx</description>
 	<properties>
@@ -46,6 +47,12 @@
 			<artifactId>spring-batch-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>5.2.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -53,6 +60,19 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+			        <execution>
+			            <goals>
+			                <goal>repackage</goal>
+			            </goals>
+			            <configuration>
+			                <classifier>spring-boot</classifier>
+			                <mainClass>
+			                  mx.com.lestradam.covid.VaccinationSitesApplication
+			                </mainClass>
+			            </configuration>
+			        </execution>
+			    </executions>
 			</plugin>
 		</plugins>
 	</build>
