@@ -16,6 +16,7 @@ public class Coordinates {
 	
 	@Id
 	private long id;
+	private String description;
 	private String latitude;
 	private String longitude;
 	
@@ -34,6 +35,14 @@ public class Coordinates {
 
 	public void setId(long id) {
 		this.id = id;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public String getLatitude() {
@@ -62,8 +71,7 @@ public class Coordinates {
 
 	@Override
 	public String toString() {
-		return "Coordinate [id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", createAt=" + createAt
-				+ "]";
+		return "Coordinate [id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", createAt=" + createAt+ "]";
 	}
 	
 }
