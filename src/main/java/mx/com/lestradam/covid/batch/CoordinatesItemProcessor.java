@@ -1,45 +1,39 @@
 package mx.com.lestradam.covid.batch;
 
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mx.com.lestradam.covid.RetrievalCoordinatesException;
-import mx.com.lestradam.covid.dto.CoordinatesDTO;
-import mx.com.lestradam.covid.entites.Site;
+import com.google.maps.errors.ApiException;
 
-public class CoordinatesItemProcessor implements ItemProcessor<Site, CoordinatesDTO>{
+import mx.com.lestradam.covid.entites.Coordinates;
+import mx.com.lestradam.covid.exceptions.DistanceMatrixException;
+import mx.com.lestradam.covid.services.DistanceMatrixService;
+import mx.com.lestradam.covid.utils.CommonUtils;
+
+public class CoordinatesItemProcessor implements ItemProcessor<Coordinates, Coordinates>{
 	
 	private Logger logger = LoggerFactory.getLogger(CoordinatesItemProcessor.class);
+	
+	@Autowired
+	private DistanceMatrixService distanceSvc;
 
 	@Override
-	public CoordinatesDTO process(Site item) throws Exception {
-		CoordinatesDTO coordinate = null;
+	public Coordinates process(Coordinates item) throws Exception {
 		try {
-			coordinate = getCoordinateFromSite(item);
-		} catch (RetrievalCoordinatesException ex) {
-			logger.error("Exception: {}", ex.getMessage());
-			logger.error("Error getting coordinates from site: {}", item);
-		}
-		return coordinate;
-	}
-	
-	private CoordinatesDTO getCoordinateFromSite(Site site) {
-		CoordinatesDTO coordinate = new CoordinatesDTO();
-		Optional<String> optCoodinate = Optional.ofNullable(site.getCoordinates());
-		if (!optCoodinate.isPresent() || site.getCoordinates().isBlank()) 
-			throw new RetrievalCoordinatesException(RetrievalCoordinatesException.EMPTY);
-		int index = site.getCoordinates().indexOf(", ");
-		if (index == -1) 
-			throw new RetrievalCoordinatesException(RetrievalCoordinatesException.INVALID);
-		String lat = site.getCoordinates().substring(0, index);
-		String lon = site.getCoordinates().substring(index + 1, site.getCoordinates().length() - 1);
-		coordinate.setId(site.getId());
-		coordinate.setLatitude(lat);
-		coordinate.setLongitude(lon);
-		return coordinate;
+			distanceSvc.getDistanceMatrix(item);
+		} catch (DistanceMatrixException e) {
+			logger.error("Error getting distance matrix from coordinates: {}", item);
+			logger.error("Message: {}", e.getMessage());
+			if (CommonUtils.isCausedBy(e, ApiException.class)) {
+				logger.error("Google Maps Service: {}", e.getCause().getMessage());
+			}
+		} catch (Exception e) {
+			logger.error("General exception on processing coordinates: {}", item);
+			logger.error("Cause: {}", e.getMessage());
+		}		
+		return item;
 	}
 
 }

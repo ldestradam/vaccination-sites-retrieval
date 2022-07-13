@@ -7,12 +7,10 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 
 @SpringBootApplication
 @EnableEncryptableProperties
-public class VaccinationSitesApplication{
-	
+public class VaccinationSitesApplication {
+
 	public static void main(String[] args) {
 		SpringApplication.run(VaccinationSitesApplication.class, args);
 	}
-
-
-
+	
 }

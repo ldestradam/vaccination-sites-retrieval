@@ -15,7 +15,7 @@ public class RetrieveInfoTasklet implements Tasklet{
 
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-		String inputFilePath = chunkContext.getStepContext().getJobParameters().get("input.file").toString();		
+		String inputFilePath = chunkContext.getStepContext().getJobParameters().get("input.file").toString();
 		xlsxReader.retrieveDatafromXlsx(inputFilePath);
 		return RepeatStatus.FINISHED;
 	}
