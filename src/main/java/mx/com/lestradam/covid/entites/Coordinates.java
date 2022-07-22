@@ -2,10 +2,10 @@ package mx.com.lestradam.covid.entites;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -19,14 +19,22 @@ public class Coordinates {
 	private String description;
 	private String latitude;
 	private String longitude;
+	private String status;
 	
-	@Column(name = "create_at")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createAt;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updateAt;
 	
 	@PrePersist
 	public void prePersist() {
 		this.createAt = new Date();
+		this.updateAt = new Date();
+	}
+	
+	@PreUpdate
+	public void preUpdate() {
+		this.updateAt = new Date();
 	}
 
 	public long getId() {
@@ -69,9 +77,26 @@ public class Coordinates {
 		this.createAt = createAt;
 	}
 
+	public Date getUpdateAt() {
+		return updateAt;
+	}
+
+	public void setUpdateAt(Date updateAt) {
+		this.updateAt = updateAt;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	@Override
 	public String toString() {
-		return "Coordinate [id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", createAt=" + createAt+ "]";
+		return "Coordinates [id=" + id + ", description=" + description + ", latitude=" + latitude + ", longitude="
+				+ longitude + ", status=" + status + ", createAt=" + createAt + ", updateAt=" + updateAt + "]";
 	}
 	
 }

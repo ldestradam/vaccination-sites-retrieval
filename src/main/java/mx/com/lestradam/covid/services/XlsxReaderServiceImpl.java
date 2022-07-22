@@ -17,7 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import mx.com.lestradam.covid.constants.BatchConstants;
 import mx.com.lestradam.covid.entites.Coordinates;
+import mx.com.lestradam.covid.exceptions.FileReaderException;
 import mx.com.lestradam.covid.exceptions.RetrievalCoordinatesException;
 import mx.com.lestradam.covid.repositories.CoordinatesRepository;
 
@@ -52,7 +54,7 @@ public class XlsxReaderServiceImpl implements XlsxReaderService {
 				saveCoordinates(row);
 			}
 		}catch (IOException e) {
-			logger.error("Error on reading coordinates: {}", e.getMessage());
+			throw new FileReaderException("Error on reading coordinates", e);
 		}
 	}
 	
@@ -90,6 +92,7 @@ public class XlsxReaderServiceImpl implements XlsxReaderService {
 					break;
 			}
 		}
+		coordinates.setStatus(BatchConstants.INITIAL_STATUS);
 		return coordinates;
 	}
 	

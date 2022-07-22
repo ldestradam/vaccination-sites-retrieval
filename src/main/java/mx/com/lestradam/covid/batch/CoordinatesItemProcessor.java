@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.maps.errors.ApiException;
 
+import mx.com.lestradam.covid.constants.BatchConstants;
 import mx.com.lestradam.covid.entites.Coordinates;
 import mx.com.lestradam.covid.exceptions.DistanceMatrixException;
 import mx.com.lestradam.covid.services.DistanceMatrixService;
@@ -23,16 +24,18 @@ public class CoordinatesItemProcessor implements ItemProcessor<Coordinates, Coor
 	public Coordinates process(Coordinates item) throws Exception {
 		try {
 			distanceSvc.getDistanceMatrix(item);
+			item.setStatus(BatchConstants.SUCCESS_STATUS);
 		} catch (DistanceMatrixException e) {
+			item.setStatus(BatchConstants.FAILED_STATUS);
 			logger.error("Error getting distance matrix from coordinates: {}", item);
 			logger.error("Message: {}", e.getMessage());
-			if (CommonUtils.isCausedBy(e, ApiException.class)) {
+			if (CommonUtils.isCausedBy(e, ApiException.class))
 				logger.error("Google Maps Service: {}", e.getCause().getMessage());
-			}
 		} catch (Exception e) {
+			item.setStatus(BatchConstants.FAILED_STATUS);
 			logger.error("General exception on processing coordinates: {}", item);
-			logger.error("Cause: {}", e.getMessage());
-		}		
+			logger.error("Message: {}", e.getMessage());
+		}
 		return item;
 	}
 

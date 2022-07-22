@@ -39,4 +39,7 @@ mvnw
 mvnw.cmd
 csv/
 json/
+xlsx/
+data/
+.gitignore
 

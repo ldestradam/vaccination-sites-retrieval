@@ -6,6 +6,7 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 import mx.com.lestradam.covid.constants.BatchConstants;
 import mx.com.lestradam.covid.entites.Coordinates;
@@ -26,6 +27,7 @@ public class CustomItemReaders {
 	}
 	
 	@Bean
+	@Scope(value = "prototype")
 	public ItemReader<TravelCost> travelCostItemReader(EntityManagerFactory entityManagerFactory) {
 		return new JpaPagingItemReaderBuilder<TravelCost>()
 			.name("travelCostItemReader")
