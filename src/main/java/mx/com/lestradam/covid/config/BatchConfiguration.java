@@ -24,8 +24,8 @@ import mx.com.lestradam.covid.batch.CoordinatesItemProcessor;
 import mx.com.lestradam.covid.batch.DistanceMatrixStepListener;
 import mx.com.lestradam.covid.batch.RetrieveInfoTasklet;
 import mx.com.lestradam.covid.constants.BatchConstants;
-import mx.com.lestradam.covid.entites.Coordinates;
-import mx.com.lestradam.covid.entites.TravelCost;
+import mx.com.lestradam.covid.entities.Coordinate;
+import mx.com.lestradam.covid.entities.Cost;
 
 @Configuration
 @EnableBatchProcessing
@@ -40,7 +40,7 @@ public class BatchConfiguration {
 	}
 	
 	@Bean
-	public ItemProcessor<Coordinates, Coordinates> coordinateItemProcessor(){
+	public ItemProcessor<Coordinate, Coordinate> coordinateItemProcessor(){
 		return new CoordinatesItemProcessor();
 	}
 	
@@ -50,36 +50,36 @@ public class BatchConfiguration {
 	}
 	
 	@Bean
-	public Step travelCostCsvStep(ItemReader<TravelCost> travelCostReader, @Qualifier("travelCostCsvItemWriter") ItemWriter<TravelCost> travelCostCsvWriter) {
+	public Step travelCostCsvStep(ItemReader<Cost> travelCostReader, @Qualifier("travelCostCsvItemWriter") ItemWriter<Cost> travelCostCsvWriter) {
 		return this.stepBuilderFactory.get("travelCostCsvStep")
-				.<TravelCost, TravelCost>chunk(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
+				.<Cost, Cost>chunk(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
 				.reader(travelCostReader)
 				.writer(travelCostCsvWriter)
 				.build();
 	}
 	
 	@Bean
-	public Step travelCostJsonStep(ItemReader<TravelCost> travelCostReader, @Qualifier("travelCostJsonItemWriter") ItemWriter<TravelCost> travelCostJsonWriter) {
+	public Step travelCostJsonStep(ItemReader<Cost> travelCostReader, @Qualifier("travelCostJsonItemWriter") ItemWriter<Cost> travelCostJsonWriter) {
 		return this.stepBuilderFactory.get("travelCostJsonStep")
-				.<TravelCost, TravelCost>chunk(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
+				.<Cost, Cost>chunk(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
 				.reader(travelCostReader)
 				.writer(travelCostJsonWriter)
 				.build();
 	}
 	
 	@Bean
-	public Step travelCostXmlStep(ItemReader<TravelCost> travelCostReader, @Qualifier("travelCostXmlItemWriter") ItemWriter<TravelCost> travelCostXmlItemWriter) {
+	public Step travelCostXmlStep(ItemReader<Cost> travelCostReader, @Qualifier("travelCostXmlItemWriter") ItemWriter<Cost> travelCostXmlItemWriter) {
 		return this.stepBuilderFactory.get("travelCostXmlStep")
-				.<TravelCost, TravelCost>chunk(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
+				.<Cost, Cost>chunk(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
 				.reader(travelCostReader)
 				.writer(travelCostXmlItemWriter)
 				.build();
 	}
 	
 	@Bean
-	public Step distanceMatrixStep(ItemReader<Coordinates> reader, ItemWriter<Coordinates> writer) {
+	public Step distanceMatrixStep(ItemReader<Coordinate> reader, ItemWriter<Coordinate> writer) {
 		return this.stepBuilderFactory.get("distanceMatrixStep")
-				.<Coordinates, Coordinates>chunk(BatchConstants.CHUNK_SIZE_COORDINATES)
+				.<Coordinate, Coordinate>chunk(BatchConstants.CHUNK_SIZE_COORDINATES)
 				.reader(reader)
 				.processor(coordinateItemProcessor())
 				.writer(writer)

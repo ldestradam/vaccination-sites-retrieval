@@ -9,18 +9,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 import mx.com.lestradam.covid.constants.BatchConstants;
-import mx.com.lestradam.covid.entites.Coordinates;
-import mx.com.lestradam.covid.entites.TravelCost;
+import mx.com.lestradam.covid.entities.Coordinate;
+import mx.com.lestradam.covid.entities.Cost;
 
 @Configuration
 public class CustomItemReaders {
 	
 	@Bean
-	public ItemReader<Coordinates> coordinatesItemReader(EntityManagerFactory entityManagerFactory) {
-		return new JpaPagingItemReaderBuilder<Coordinates>()
+	public ItemReader<Coordinate> coordinatesItemReader(EntityManagerFactory entityManagerFactory) {
+		return new JpaPagingItemReaderBuilder<Coordinate>()
 			.name("coordinatesItemReader")
 			.entityManagerFactory(entityManagerFactory)
-			.queryString("select s from Coordinates s")
+			.queryString("select s from Coordinate s")
 			.pageSize(BatchConstants.CHUNK_SIZE_COORDINATES)
 			.saveState(false)
 			.build();
@@ -28,11 +28,11 @@ public class CustomItemReaders {
 	
 	@Bean
 	@Scope(value = "prototype")
-	public ItemReader<TravelCost> travelCostItemReader(EntityManagerFactory entityManagerFactory) {
-		return new JpaPagingItemReaderBuilder<TravelCost>()
+	public ItemReader<Cost> travelCostItemReader(EntityManagerFactory entityManagerFactory) {
+		return new JpaPagingItemReaderBuilder<Cost>()
 			.name("travelCostItemReader")
 			.entityManagerFactory(entityManagerFactory)
-			.queryString("select tc from TravelCost tc")
+			.queryString("select c from Cost c")
 			.pageSize(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
 			.saveState(false)
 			.build();

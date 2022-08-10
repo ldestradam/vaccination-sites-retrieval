@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 
-import mx.com.lestradam.covid.entites.Coordinates;
-import mx.com.lestradam.covid.entites.TravelCost;
+import mx.com.lestradam.covid.entities.Coordinate;
+import mx.com.lestradam.covid.entities.Cost;
 
 @Configuration
 public class CustomItemWriters {
@@ -37,12 +37,12 @@ public class CustomItemWriters {
 	private static final String[] names = new String[] { "id", "idSiteFrom", "idSiteTo", "distance", "duration", "status"};
 	
 	@Bean(name = "travelCostCsvItemWriter")
-	public ItemWriter<TravelCost> travelCostCsvItemWriter() {
-		FlatFileItemWriter<TravelCost> itemWriter = new FlatFileItemWriter<>();		
+	public ItemWriter<Cost> travelCostCsvItemWriter() {
+		FlatFileItemWriter<Cost> itemWriter = new FlatFileItemWriter<>();		
 		itemWriter.setResource(new FileSystemResource(csvFilePath));		
-		DelimitedLineAggregator<TravelCost> aggregator = new DelimitedLineAggregator<>();
+		DelimitedLineAggregator<Cost> aggregator = new DelimitedLineAggregator<>();
 		aggregator.setDelimiter(",");		
-		BeanWrapperFieldExtractor<TravelCost> fieldExtractor = new BeanWrapperFieldExtractor<>();
+		BeanWrapperFieldExtractor<Cost> fieldExtractor = new BeanWrapperFieldExtractor<>();
 		fieldExtractor.setNames(names);
 		aggregator.setFieldExtractor(fieldExtractor);
 		itemWriter.setLineAggregator(aggregator);
@@ -50,8 +50,8 @@ public class CustomItemWriters {
 	}
 	
 	@Bean(name = "travelCostJsonItemWriter")
-	public ItemWriter<TravelCost> travelCostJsonItemWriter() {
-		return new JsonFileItemWriterBuilder<TravelCost>()
+	public ItemWriter<Cost> travelCostJsonItemWriter() {
+		return new JsonFileItemWriterBuilder<Cost>()
 				.jsonObjectMarshaller(new JacksonJsonObjectMarshaller<>())
 				.resource(new FileSystemResource(jsonFilePath))
 				.name("travelCostJsonItemWriter")
@@ -59,13 +59,13 @@ public class CustomItemWriters {
 	}
 	
 	@Bean(name = "travelCostXmlItemWriter")
-	public ItemWriter<TravelCost> travelCostXmlItemWriter() {	
-		Map<String, Class<TravelCost> > aliases = new HashMap<>();
-		aliases.put("travelcost", TravelCost.class);
+	public ItemWriter<Cost> travelCostXmlItemWriter() {	
+		Map<String, Class<Cost> > aliases = new HashMap<>();
+		aliases.put("travelcost", Cost.class);
 		XStreamMarshaller marshaller = new XStreamMarshaller();
 		marshaller.setAliases(aliases);
 		
-		return new StaxEventItemWriterBuilder<TravelCost>()
+		return new StaxEventItemWriterBuilder<Cost>()
 			.name("studentWriter")
 			.resource(new FileSystemResource(xmlFilePath))
 			.marshaller(marshaller)
@@ -74,8 +74,8 @@ public class CustomItemWriters {
 	}
 	
 	@Bean
-	public ItemWriter<Coordinates> coordinatesJpaItemWriter(EntityManagerFactory entityManagerFactory) {
-		  JpaItemWriter<Coordinates> iwriter = new JpaItemWriter<>();
+	public ItemWriter<Coordinate> coordinatesJpaItemWriter(EntityManagerFactory entityManagerFactory) {
+		  JpaItemWriter<Coordinate> iwriter = new JpaItemWriter<>();
 		  iwriter.setEntityManagerFactory(entityManagerFactory);
 		  return iwriter;
 	}

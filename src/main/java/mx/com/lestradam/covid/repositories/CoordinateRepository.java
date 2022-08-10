@@ -5,12 +5,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import mx.com.lestradam.covid.entites.Coordinates;
+import mx.com.lestradam.covid.entities.Coordinate;
 
 @Repository
-public interface CoordinatesRepository extends PagingAndSortingRepository<Coordinates, Long> {
-
-	public Page<Coordinates> findByIdGreaterThan(long id, Pageable pageable);
-	public long countByStatus(String status);
+public interface CoordinateRepository extends PagingAndSortingRepository<Coordinate, Long> {
 	
+	public Page<Coordinate> findByIdGreaterThan(long id, Pageable pageable);
+
 }

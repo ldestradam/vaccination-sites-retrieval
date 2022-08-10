@@ -18,10 +18,10 @@ import com.google.maps.model.DistanceMatrixRow;
 import com.google.maps.model.LatLng;
 
 import mx.com.lestradam.covid.clients.DistanceMatrixClient;
-import mx.com.lestradam.covid.entites.Coordinates;
-import mx.com.lestradam.covid.entites.TravelCost;
-import mx.com.lestradam.covid.repositories.CoordinatesRepository;
-import mx.com.lestradam.covid.repositories.TravelCostRespository;
+import mx.com.lestradam.covid.entities.Coordinate;
+import mx.com.lestradam.covid.entities.Cost;
+import mx.com.lestradam.covid.repositories.CoordinateRepository;
+import mx.com.lestradam.covid.repositories.CostRespository;
 import mx.com.lestradam.covid.utils.DistanceMatrixParamsEncoder;
 
 @Service
@@ -34,13 +34,13 @@ public class DistanceMatrixServiceImpl implements DistanceMatrixService{
 	private DistanceMatrixClient client;
 	
 	@Autowired
-	private CoordinatesRepository coordRepository;
+	private CoordinateRepository coordRepository;
 	
 	@Autowired
-	private TravelCostRespository travelRepository;
+	private CostRespository costRepository;
 
 	@Override
-	public void getDistanceMatrix(Coordinates coordinates) {
+	public void getDistanceMatrix(Coordinate coordinates) {
 		long idOrigin = coordinates.getId();
 		logger.debug("Origin: {}",coordinates);
 		String queryOrigins = getQueryLocations(Arrays.asList(coordinates));
@@ -48,28 +48,28 @@ public class DistanceMatrixServiceImpl implements DistanceMatrixService{
 		int totalPages = coordRepository.findByIdGreaterThan(idOrigin, pageable).getTotalPages();
 		for (int i = 0; i < totalPages ; i++) {
 			pageable = PageRequest.of(i, CHUNK_DESTINATIONS);
-			Page<Coordinates> chunk = coordRepository.findByIdGreaterThan(idOrigin, pageable);
-			List<Coordinates> destinations = chunk.getContent();
+			Page<Coordinate> chunk = coordRepository.findByIdGreaterThan(idOrigin, pageable);
+			List<Coordinate> destinations = chunk.getContent();
 			String queryDestinations = getQueryLocations(destinations);
 			DistanceMatrix matrix = client.getTravelDistanceAndTime(queryOrigins, queryDestinations );
 			DistanceMatrixRow[] rows = matrix.rows;
 			for (int j = 0; j < rows.length; j++) {
 				DistanceMatrixElement element = rows[j].elements[0];
-				TravelCost cost = new TravelCost();
-				cost.setIdSiteFrom(idOrigin);
-				cost.setIdSiteTo(destinations.get(j).getId());
+				Cost cost = new Cost();
+				cost.setIdPlaceFrom(coordinates.getIdPlace());
+				cost.setIdPlaceTo(destinations.get(j).getIdPlace());
 				cost.setDistance(String.valueOf(element.distance.inMeters));
 				cost.setDuration(String.valueOf(element.duration.inSeconds));
 				cost.setStatus(element.status.toString());
-				logger.debug("Travel Costs: {}", cost);
-				travelRepository.save(cost);
+				cost = costRepository.save(cost);
+				logger.debug("Travel Costs: {}", cost);				
 			}
 		}
 	}
 	
 	
 	
-	private String getQueryLocations(List<Coordinates> locations) {
+	private String getQueryLocations(List<Coordinate> locations) {
 		List<LatLng> latLngdestinations = locations.stream()
 			.map( coordinates -> new LatLng( Double.valueOf(coordinates.getLatitude()), Double.valueOf(coordinates.getLongitude())))
 			.collect(Collectors.toList());

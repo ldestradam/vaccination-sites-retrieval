@@ -3,9 +3,9 @@ package mx.com.lestradam.covid.repositories;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import mx.com.lestradam.covid.entites.TravelCost;
+import mx.com.lestradam.covid.entities.Cost;
 
 @Repository
-public interface TravelCostRespository extends CrudRepository<TravelCost, Long> {
+public interface CostRespository extends CrudRepository<Cost, Long> {
 
 }

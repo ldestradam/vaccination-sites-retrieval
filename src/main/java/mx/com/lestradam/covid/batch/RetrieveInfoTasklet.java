@@ -8,20 +8,20 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import mx.com.lestradam.covid.components.XlsxReader;
 import mx.com.lestradam.covid.exceptions.FileReaderException;
-import mx.com.lestradam.covid.services.XlsxReaderService;
 
 public class RetrieveInfoTasklet implements Tasklet{
 	
 	@Autowired
-	private XlsxReaderService xlsxReader;
+	private XlsxReader xlsxReader;
 
 	@Override
-	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {		
 		Optional<Object> optFilePath = Optional.ofNullable(chunkContext.getStepContext().getJobParameters().get("input.file"));
 		if(!optFilePath.isPresent())
 			throw new FileReaderException("File path not provided");		
-		xlsxReader.retrieveDatafromXlsx(optFilePath.get().toString());
+		xlsxReader.retrieveDataFromXlsx(optFilePath.get().toString());
 		return RepeatStatus.FINISHED;
 	}
 
