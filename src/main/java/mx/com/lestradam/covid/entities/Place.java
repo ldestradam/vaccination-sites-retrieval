@@ -18,6 +18,15 @@ public class Place {
 	
 	@Column(name = "description")
 	private String description;
+	
+	@Column(name = "isdepot")
+	private int isDepot;
+	
+	public Place() {}
+
+	public Place(long id) {
+		this.id = id;
+	}
 
 	public long getId() {
 		return id;
@@ -43,10 +52,18 @@ public class Place {
 		this.description = description;
 	}
 
+	public int getIsDepot() {
+		return isDepot;
+	}
+
+	public void setIsDepot(int isDepot) {
+		this.isDepot = isDepot;
+	}
+
 	@Override
 	public String toString() {
-		return "Place [id=" + id + ", idMunicipality=" + idMunicipality + ", description=" + description
-				+ "]";
+		return "Place [id=" + id + ", idMunicipality=" + idMunicipality + ", description=" + description + ", isDepot="
+				+ isDepot + "]";
 	}
 
 }

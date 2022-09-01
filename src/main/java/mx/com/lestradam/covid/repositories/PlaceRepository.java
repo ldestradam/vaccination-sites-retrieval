@@ -7,5 +7,4 @@ import mx.com.lestradam.covid.entities.Place;
 
 @Repository
 public interface PlaceRepository extends CrudRepository<Place, Long> {
-
 }

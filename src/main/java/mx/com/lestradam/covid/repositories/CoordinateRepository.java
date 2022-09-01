@@ -11,5 +11,5 @@ import mx.com.lestradam.covid.entities.Coordinate;
 public interface CoordinateRepository extends PagingAndSortingRepository<Coordinate, Long> {
 	
 	public Page<Coordinate> findByIdGreaterThan(long id, Pageable pageable);
-
+	long deleteByIdPlace(long idPlace);
 }

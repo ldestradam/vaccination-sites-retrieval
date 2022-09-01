@@ -21,7 +21,7 @@ import mx.com.lestradam.covid.clients.DistanceMatrixClient;
 import mx.com.lestradam.covid.entities.Coordinate;
 import mx.com.lestradam.covid.entities.Cost;
 import mx.com.lestradam.covid.repositories.CoordinateRepository;
-import mx.com.lestradam.covid.repositories.CostRespository;
+import mx.com.lestradam.covid.repositories.CostRepository;
 import mx.com.lestradam.covid.utils.DistanceMatrixParamsEncoder;
 
 @Service
@@ -37,7 +37,7 @@ public class DistanceMatrixServiceImpl implements DistanceMatrixService{
 	private CoordinateRepository coordRepository;
 	
 	@Autowired
-	private CostRespository costRepository;
+	private CostRepository costRepository;
 
 	@Override
 	public void getDistanceMatrix(Coordinate coordinates) {
@@ -62,7 +62,7 @@ public class DistanceMatrixServiceImpl implements DistanceMatrixService{
 				cost.setDuration(String.valueOf(element.duration.inSeconds));
 				cost.setStatus(element.status.toString());
 				cost = costRepository.save(cost);
-				logger.debug("Travel Costs: {}", cost);				
+				logger.debug("Travel Costs: {}", cost);
 			}
 		}
 	}
