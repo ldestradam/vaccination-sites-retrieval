@@ -1,83 +1,31 @@
 package mx.com.lestradam.covid.batch;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.file.FlatFileItemWriter;
-import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
-import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
-import org.springframework.batch.item.json.JacksonJsonObjectMarshaller;
-import org.springframework.batch.item.json.builder.JsonFileItemWriterBuilder;
-import org.springframework.batch.item.xml.builder.StaxEventItemWriterBuilder;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.oxm.xstream.XStreamMarshaller;
 
 import mx.com.lestradam.covid.entities.Coordinate;
-import mx.com.lestradam.covid.entities.Cost;
+import mx.com.lestradam.covid.entities.Dose;
 
 @Configuration
 public class CustomItemWriters {
 	
-	@Value("${output.file.json}")
-	private String jsonFilePath;
-	
-	@Value("${output.file.csv}")
-	private String csvFilePath;
-	
-	@Value("${output.file.xml}")
-	private String xmlFilePath;
-	
-	private static final String[] names = new String[] { "id", "idSiteFrom", "idSiteTo", "distance", "duration", "status"};
-	
-	@Bean(name = "travelCostCsvItemWriter")
-	public ItemWriter<Cost> travelCostCsvItemWriter() {
-		FlatFileItemWriter<Cost> itemWriter = new FlatFileItemWriter<>();		
-		itemWriter.setResource(new FileSystemResource(csvFilePath));		
-		DelimitedLineAggregator<Cost> aggregator = new DelimitedLineAggregator<>();
-		aggregator.setDelimiter(",");		
-		BeanWrapperFieldExtractor<Cost> fieldExtractor = new BeanWrapperFieldExtractor<>();
-		fieldExtractor.setNames(names);
-		aggregator.setFieldExtractor(fieldExtractor);
-		itemWriter.setLineAggregator(aggregator);
-		return itemWriter;
-	}
-	
-	@Bean(name = "travelCostJsonItemWriter")
-	public ItemWriter<Cost> travelCostJsonItemWriter() {
-		return new JsonFileItemWriterBuilder<Cost>()
-				.jsonObjectMarshaller(new JacksonJsonObjectMarshaller<>())
-				.resource(new FileSystemResource(jsonFilePath))
-				.name("travelCostJsonItemWriter")
-				.build();
-	}
-	
-	@Bean(name = "travelCostXmlItemWriter")
-	public ItemWriter<Cost> travelCostXmlItemWriter() {	
-		Map<String, Class<Cost> > aliases = new HashMap<>();
-		aliases.put("travelcost", Cost.class);
-		XStreamMarshaller marshaller = new XStreamMarshaller();
-		marshaller.setAliases(aliases);
-		
-		return new StaxEventItemWriterBuilder<Cost>()
-			.name("studentWriter")
-			.resource(new FileSystemResource(xmlFilePath))
-			.marshaller(marshaller)
-			.rootTagName("travelcosts")
-			.build();
+	@Bean
+	public ItemWriter<Coordinate> coordinatesJpaItemWriter(EntityManagerFactory entityManagerFactory) {
+		JpaItemWriter<Coordinate> writer = new JpaItemWriter<>();
+		writer.setEntityManagerFactory(entityManagerFactory);
+		return writer;
 	}
 	
 	@Bean
-	public ItemWriter<Coordinate> coordinatesJpaItemWriter(EntityManagerFactory entityManagerFactory) {
-		  JpaItemWriter<Coordinate> iwriter = new JpaItemWriter<>();
-		  iwriter.setEntityManagerFactory(entityManagerFactory);
-		  return iwriter;
+	public ItemWriter<Dose> dosesJpaItemWriter(EntityManagerFactory entityManagerFactory) {
+		JpaItemWriter<Dose> writer = new JpaItemWriter<>();
+		writer.setEntityManagerFactory(entityManagerFactory);
+		return writer;
 	}
 
 }

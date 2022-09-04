@@ -6,11 +6,10 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import mx.com.lestradam.covid.constants.BatchConstants;
 import mx.com.lestradam.covid.entities.Coordinate;
-import mx.com.lestradam.covid.entities.Cost;
+import mx.com.lestradam.covid.entities.Dose;
 
 @Configuration
 public class CustomItemReaders {
@@ -27,13 +26,12 @@ public class CustomItemReaders {
 	}
 	
 	@Bean
-	@Scope(value = "prototype")
-	public ItemReader<Cost> travelCostItemReader(EntityManagerFactory entityManagerFactory) {
-		return new JpaPagingItemReaderBuilder<Cost>()
-			.name("travelCostItemReader")
+	public ItemReader<Dose> dosesItemReader(EntityManagerFactory entityManagerFactory) {
+		return new JpaPagingItemReaderBuilder<Dose>()
+			.name("dosesItemReader")
 			.entityManagerFactory(entityManagerFactory)
-			.queryString("select c from Cost c")
-			.pageSize(BatchConstants.CHUNK_SIZE_TRAVEL_COST)
+			.queryString("select s from Dose s")
+			.pageSize(BatchConstants.CHUNK_SIZE_DOSES)
 			.saveState(false)
 			.build();
 	}

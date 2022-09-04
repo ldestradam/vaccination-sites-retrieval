@@ -91,6 +91,7 @@ public class XlsxReader{
 	private ErrorLogRepository errorRepository;
 	
 	public void retrieveDataFromXlsx(String filePath) {
+		deleteCoordinatesAndDose();
 		try (
 			FileInputStream excelFile = new FileInputStream(new File(filePath));
 			XSSFWorkbook xssfWorkbook = new XSSFWorkbook(excelFile);
@@ -99,13 +100,18 @@ public class XlsxReader{
 			Sheet places = xssfWorkbook.getSheetAt(SHEET_PLACES);
 			Sheet coordinates = xssfWorkbook.getSheetAt(SHEET_COORDINATES);
 			Sheet depots = xssfWorkbook.getSheetAt(SHEET_DEPOT);
-			retrieveMunicipality(municipalities);
+			retrieveMunicipality(municipalities);			
 			retrievePlaces(places);
 			retrieveCoordinates(coordinates);
 			retrieveDepot(depots);
 		}catch (IOException e) {
 			throw new FileReaderException("Error on reading file: " + filePath, e);		
 		}
+	}
+	
+	public void deleteCoordinatesAndDose() {
+		coordRepository.deleteAll();
+		doseRepository.deleteAll();
 	}
 	
 	private void retrieveMunicipality(Sheet sheet) {
@@ -117,7 +123,7 @@ public class XlsxReader{
 			try {
 				extractMunicipality(row);
 			} catch (RetrievalDataException  e) {
-				logger.error("Error: {}", e.getMessage());
+				logger.error(e.getMessage());
 				saveError(e.getMessage(), ApplicationConstant.ERROR_TYPE_DATA);
 			}
 		}
@@ -132,7 +138,7 @@ public class XlsxReader{
 			try {
 				saveCoordinates(row);
 			} catch (RetrievalDataException  e) {
-				logger.error("Error: {}", e.getMessage());
+				logger.error(e.getMessage());
 				saveError(e.getMessage(), ApplicationConstant.ERROR_TYPE_DATA);
 			}
 		}
@@ -147,7 +153,7 @@ public class XlsxReader{
 			try {
 				savePlaces(row);
 			} catch (RetrievalDataException  e) {
-				logger.error("Error: {}", e.getMessage());
+				logger.error(e.getMessage());
 				saveError(e.getMessage(), ApplicationConstant.ERROR_TYPE_DATA);
 			}			
 		}
@@ -162,7 +168,7 @@ public class XlsxReader{
 			try {
 				saveDepot(row);
 			} catch (RetrievalDataException  e) {
-				logger.error("Error: {}", e.getMessage());
+				logger.error(e.getMessage());
 				saveError(e.getMessage(), ApplicationConstant.ERROR_TYPE_DATA);
 			}			
 		}
@@ -171,16 +177,12 @@ public class XlsxReader{
 	private void saveDepot(Row row) {
 		Place place = extractPlace(row, DEPOT_TYPE);
 		logger.debug("Row: {} \tDepot: {}", row.getRowNum(), place.getId());
-		long deleted = coordRepository.deleteByIdPlace(place.getId());
-		logger.debug("Coordinates deleted: {}", deleted);
 		saveCoordinates(row);
 	}
 	
 	private void savePlaces(Row row) {		
 		Place place = extractPlace(row, PLACE_TYPE);
 		logger.debug("Row: {} \tPlace: {}", row.getRowNum(), place.getId());
-		long deleted = coordRepository.deleteByIdPlace(place.getId());
-		logger.debug("Coordinates deleted: {}", deleted);		
 		extractApplicationDose(row, place.getId());
 	}
 	
@@ -212,14 +214,7 @@ public class XlsxReader{
 		Municipality municipality = municipalityRepo.findById(idMunicipality)
 				.orElseThrow(()-> new RetrievalDataException("Error getting place on row " + row.getRowNum() + ", municipality not found"));
 		Optional<Place> placeOpt = placeRepository.findById(idPlace);
-		Place place = null;
-		if (placeOpt.isPresent()) {
-			long deleted = doseRepository.deleteByIdPlace(idPlace);
-			logger.debug("Dose deleted: {}", deleted);
-			place = placeOpt.get();						
-		}else {
-			place = new Place(idPlace);
-		}
+		Place place = placeOpt.orElse( new Place(idPlace));
 		place.setIdMunicipality(municipality.getId());
 		place.setDescription(row.getCell(CELL_PLACE_DESCRIPTION).getStringCellValue());
 		place.setIsDepot(type);
@@ -251,6 +246,7 @@ public class XlsxReader{
 		dose.setApplication(application);
 		dose.setStartDate(start);
 		dose.setFinalDate(end);
+		dose.setQuantity(0L);
 		doseRepository.save(dose);
 		logger.debug("Row: {} \tDose: {}", row.getRowNum(), dose);
 	}

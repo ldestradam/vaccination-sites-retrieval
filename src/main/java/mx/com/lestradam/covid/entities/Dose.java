@@ -36,6 +36,9 @@ public class Dose {
 	@Column(name = "finaldate")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date finalDate;
+	
+	@Column(name = "quantity")
+	private long quantity;
 
 	public long getId() {
 		return id;
@@ -85,10 +88,18 @@ public class Dose {
 		this.finalDate = finalDate;
 	}
 
+	public long getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(long quantity) {
+		this.quantity = quantity;
+	}
+
 	@Override
 	public String toString() {
-		return "Application [id=" + id + ", idPlace=" + idPlace + ", age=" + age + ", application=" + application + ", startDate="
-				+ startDate + ", finalDate=" + finalDate + "]";
+		return "Dose [id=" + id + ", idPlace=" + idPlace + ", age=" + age + ", application=" + application
+				+ ", startDate=" + startDate + ", finalDate=" + finalDate + ", quantity=" + quantity + "]";
 	}
 
 }
