@@ -20,7 +20,7 @@ public class RetrieveInfoTasklet implements Tasklet{
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {		
 		Optional<Object> optFilePath = Optional.ofNullable(chunkContext.getStepContext().getJobParameters().get("input.file"));
 		if(!optFilePath.isPresent())
-			throw new FileReaderException("File path not provided");		
+			throw new FileReaderException("File path not provided");
 		xlsxReader.retrieveDataFromXlsx(optFilePath.get().toString());
 		return RepeatStatus.FINISHED;
 	}

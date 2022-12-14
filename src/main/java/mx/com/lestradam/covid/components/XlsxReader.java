@@ -102,8 +102,8 @@ public class XlsxReader{
 			Sheet depots = xssfWorkbook.getSheetAt(SHEET_DEPOT);
 			retrieveMunicipality(municipalities);			
 			retrievePlaces(places);
-			retrieveCoordinates(coordinates);
 			retrieveDepot(depots);
+			retrieveCoordinates(coordinates);			
 		}catch (IOException e) {
 			throw new FileReaderException("Error on reading file: " + filePath, e);		
 		}
@@ -177,7 +177,6 @@ public class XlsxReader{
 	private void saveDepot(Row row) {
 		Place place = extractPlace(row, DEPOT_TYPE);
 		logger.debug("Row: {} \tDepot: {}", row.getRowNum(), place.getId());
-		saveCoordinates(row);
 	}
 	
 	private void savePlaces(Row row) {		
@@ -262,7 +261,7 @@ public class XlsxReader{
 		}
 	}
 	
-	private Coordinate extractCoordinates(Row row) {				
+	private Coordinate extractCoordinates(Row row) {
 		long idPlace = (long) row.getCell(CELL_NUM_PLACE).getNumericCellValue();
 		Cell coord = Optional.ofNullable(row.getCell(CELL_COORDINATES))
 				.orElseThrow(()-> new RetrievalDataException("Error getting coordinates on row " + row.getRowNum())) ;
