@@ -31,6 +31,12 @@ public class ExportParameters {
 		this.dose = builder.dose;
 	}
 	
+	@Override
+	public String toString() {
+		return "ExportParameters [outputNodes=" + outputNodes + ", outputEdges=" + outputEdges + ", age=" + age
+				+ ", dose=" + dose + "]";
+	}
+
 	//Builder Class
 	public static class ExportParametersBuilder {
 		// required parameters
