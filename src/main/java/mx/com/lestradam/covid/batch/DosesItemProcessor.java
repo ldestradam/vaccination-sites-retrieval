@@ -47,8 +47,16 @@ public class DosesItemProcessor implements ItemProcessor<Dose, Dose>{
 	
 	private long getQuantity(Dose dose, Municipality municipality, long numOfDoses) {
 		long quantity = 0;
-		if (dose.getAge().contains(AGE_60)) // TODO Complementar
+		if (dose.getAge().contains(AGE_60))
 			quantity = municipality.getPopulation60() / numOfDoses;
+		else if (dose.getAge().contains(AGE_50))
+			quantity = municipality.getPopulation25() / numOfDoses;
+		else if (dose.getAge().contains(AGE_40))
+			quantity = municipality.getPopulation25() / numOfDoses;
+		else if (dose.getAge().contains(AGE_30))
+			quantity = municipality.getPopulation0() / numOfDoses;
+		else if (dose.getAge().contains(AGE_18))
+			quantity = municipality.getPopulation0() / numOfDoses;
 		return quantity;
 	}
 

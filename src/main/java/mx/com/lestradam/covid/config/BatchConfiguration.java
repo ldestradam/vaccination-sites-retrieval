@@ -32,7 +32,7 @@ public class BatchConfiguration {
 	private StepBuilderFactory stepBuilderFactory;
 	
 	@Bean
-	public ThreadPoolTaskExecutor taskExecutor() {
+	ThreadPoolTaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(BatchConstants.THREADS);
 		executor.setMaxPoolSize(BatchConstants.THREADS);
@@ -41,27 +41,27 @@ public class BatchConfiguration {
 	}
 	
 	@Bean
-	public StepExecutionListener distanceMatrixStepListener() {
+	StepExecutionListener distanceMatrixStepListener() {
 		return new DistanceMatrixStepListener();
 	}
 	
 	@Bean
-	public ItemProcessor<Coordinate, Coordinate> coordinateItemProcessor(){
+	ItemProcessor<Coordinate, Coordinate> coordinateItemProcessor(){
 		return new CoordinatesItemProcessor();
 	}
 	
 	@Bean
-	public ItemProcessor<Dose, Dose> doseItemProcessor(){
+	ItemProcessor<Dose, Dose> doseItemProcessor(){
 		return new DosesItemProcessor();
 	}
 	
 	@Bean 
-	public Tasklet retrieveInfoTasklet() {
+	Tasklet retrieveInfoTasklet() {
 		return new RetrieveInfoTasklet();
 	}
 	
 	@Bean
-	public Step distanceMatrixStep(ItemReader<Coordinate> reader, ItemWriter<Coordinate> writer) {
+	Step distanceMatrixStep(ItemReader<Coordinate> reader, ItemWriter<Coordinate> writer) {
 		return this.stepBuilderFactory.get("distanceMatrixStep")
 			.<Coordinate, Coordinate>chunk(BatchConstants.CHUNK_SIZE_COORDINATES)
 			.reader(reader)
@@ -73,7 +73,7 @@ public class BatchConfiguration {
 	}
 	
 	@Bean
-	public Step doseQuantityStep(ItemReader<Dose> reader, ItemWriter<Dose> writer) {
+	Step doseQuantityStep(ItemReader<Dose> reader, ItemWriter<Dose> writer) {
 		return this.stepBuilderFactory.get("doseStep")
 			.<Dose, Dose>chunk(BatchConstants.CHUNK_SIZE_DOSES)
 			.reader(reader)
@@ -84,12 +84,12 @@ public class BatchConfiguration {
 	}
 
 	@Bean
-	public Step retrieveInfoStep() {
+	Step retrieveInfoStep() {
 		return this.stepBuilderFactory.get("retrieveInfoStep").tasklet(retrieveInfoTasklet()).build();
 	}
 
 	@Bean
-	public Job job(JobBuilderFactory jobBuilderFactory, Step distanceMatrixStep,  Step doseQuantityStep) {
+	Job job(JobBuilderFactory jobBuilderFactory, Step distanceMatrixStep,  Step doseQuantityStep) {
 		return jobBuilderFactory.get("job")
 			.incrementer(new RunIdIncrementer())
 			.start(retrieveInfoStep())

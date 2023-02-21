@@ -41,5 +41,7 @@ csv/
 json/
 xlsx/
 data/
+log/
+results/
 .gitignore
 
