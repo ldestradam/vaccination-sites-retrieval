@@ -50,7 +50,8 @@ public class ExportDataServiceImpl implements ExportDataService {
 		logger.info("Total places: {}", dosesFrom.size());
 		logger.info("Total depots: {}", depots.size());
 		for (Place depot : depots) {
-			
+			String[] node = getNodeDetail(depot);
+			nodes.add(node);
 		}
 		for (Dose doseFrom : dosesFrom) {
 			logger.debug("From: {}", doseFrom);
@@ -70,6 +71,17 @@ public class ExportDataServiceImpl implements ExportDataService {
 		}
 		CsvWriter.createFile(nodesFile, nodes);
 		CsvWriter.createFile(edgesFile, edges);
+	}
+	
+	private String[] getNodeDetail(Place place) {
+		String id = String.valueOf(place.getId());
+		String label = "Deposito " + place.getId();
+		Optional<Coordinate> coordsOpt = coordRepository.findByIdPlace(place.getId());
+		if (coordsOpt.isPresent()) {
+			Coordinate coord = coordsOpt.get();
+			return new String[] { id, label, "0", coord.getLongitude(), coord.getLatitude() };
+		}
+		return new String[] { id, label, "0", "N/A", "N/A" };
 	}
 
 	private String[] getNodeDetail(Dose dose) {
