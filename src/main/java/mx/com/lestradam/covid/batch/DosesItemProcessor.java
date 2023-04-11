@@ -50,13 +50,13 @@ public class DosesItemProcessor implements ItemProcessor<Dose, Dose>{
 		if (dose.getAge().contains(AGE_60))
 			quantity = municipality.getPopulation60() / numOfDoses;
 		else if (dose.getAge().contains(AGE_50))
-			quantity = municipality.getPopulation25() / numOfDoses;
+			quantity = municipality.getPopulation50() / numOfDoses;
 		else if (dose.getAge().contains(AGE_40))
-			quantity = municipality.getPopulation25() / numOfDoses;
+			quantity = municipality.getPopulation40() / numOfDoses;
 		else if (dose.getAge().contains(AGE_30))
-			quantity = municipality.getPopulation0() / numOfDoses;
+			quantity = municipality.getPopulation30() / numOfDoses;
 		else if (dose.getAge().contains(AGE_18))
-			quantity = municipality.getPopulation0() / numOfDoses;
+			quantity = municipality.getPopulation18() / numOfDoses;
 		return quantity;
 	}
 

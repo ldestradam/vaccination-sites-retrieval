@@ -6,44 +6,36 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="municipalities")
+@Table(name = "municipalities")
 public class Municipality {
-	
+
 	@Id
 	@Column(name = "idmunicipality")
 	private long id;
-	
+
 	@Column(name = "description")
 	private String description;
-	
-	@Column(name = "density")
-	private Double density;
-	
-	@Column(name = "totalpopulation")
-	private long totalpopulation;
-	
-	@Column(name = "malepopulation")
-	private long malepopulation;
-	
-	@Column(name = "femalepopulation")
-	private long femalepopulation;
-	
+
+	@Column(name = "population18")
+	private long population18;
+
+	@Column(name = "population30")
+	private long population30;
+
+	@Column(name = "population40")
+	private long population40;
+
+	@Column(name = "population50")
+	private long population50;
+
 	@Column(name = "population60")
 	private long population60;
-	
-	@Column(name = "malepopulation60")
-	private long malepopulation60;
-	
-	@Column(name = "femalepopulation60")
-	private long femalepopulation60;
-	
-	@Column(name = "population0")
-	private long population0;
-	
-	@Column(name = "population25")
-	private long population25;
-	
-	public Municipality() {}
+
+	@Column(name = "totalpopulation")
+	private long totalpopulation;
+
+	public Municipality() {
+	}
 
 	public Municipality(long id) {
 		this.id = id;
@@ -65,36 +57,36 @@ public class Municipality {
 		this.description = description;
 	}
 
-	public Double getDensity() {
-		return density;
+	public long getPopulation18() {
+		return population18;
 	}
 
-	public void setDensity(Double density) {
-		this.density = density;
+	public void setPopulation18(long population18) {
+		this.population18 = population18;
 	}
 
-	public long getTotalpopulation() {
-		return totalpopulation;
+	public long getPopulation30() {
+		return population30;
 	}
 
-	public void setTotalpopulation(long totalpopulation) {
-		this.totalpopulation = totalpopulation;
+	public void setPopulation30(long population30) {
+		this.population30 = population30;
 	}
 
-	public long getMalepopulation() {
-		return malepopulation;
+	public long getPopulation40() {
+		return population40;
 	}
 
-	public void setMalepopulation(long malepopulation) {
-		this.malepopulation = malepopulation;
+	public void setPopulation40(long population40) {
+		this.population40 = population40;
 	}
 
-	public long getFemalepopulation() {
-		return femalepopulation;
+	public long getPopulation50() {
+		return population50;
 	}
 
-	public void setFemalepopulation(long femalepopulation) {
-		this.femalepopulation = femalepopulation;
+	public void setPopulation50(long population50) {
+		this.population50 = population50;
 	}
 
 	public long getPopulation60() {
@@ -105,44 +97,19 @@ public class Municipality {
 		this.population60 = population60;
 	}
 
-	public long getMalepopulation60() {
-		return malepopulation60;
+	public long getTotalpopulation() {
+		return totalpopulation;
 	}
 
-	public void setMalepopulation60(long malepopulation60) {
-		this.malepopulation60 = malepopulation60;
-	}
-
-	public long getFemalepopulation60() {
-		return femalepopulation60;
-	}
-
-	public void setFemalepopulation60(long femalepopulation60) {
-		this.femalepopulation60 = femalepopulation60;
-	}
-
-	public long getPopulation0() {
-		return population0;
-	}
-
-	public void setPopulation0(long population0) {
-		this.population0 = population0;
-	}
-
-	public long getPopulation25() {
-		return population25;
-	}
-
-	public void setPopulation25(long population25) {
-		this.population25 = population25;
+	public void setTotalpopulation(long totalpopulation) {
+		this.totalpopulation = totalpopulation;
 	}
 
 	@Override
 	public String toString() {
-		return "Municipality [id=" + id + ", description=" + description + ", density=" + density + ", totalpopulation="
-				+ totalpopulation + ", malepopulation=" + malepopulation + ", femalepopulation=" + femalepopulation
-				+ ", population60=" + population60 + ", malepopulation60=" + malepopulation60 + ", femalepopulation60="
-				+ femalepopulation60 + ", population0=" + population0 + ", population25=" + population25 + "]";
+		return "Municipality [id=" + id + ", description=" + description + ", population18=" + population18
+				+ ", population30=" + population30 + ", population40=" + population40 + ", population50=" + population50
+				+ ", population60=" + population60 + ", totalpopulation=" + totalpopulation + "]";
 	}
 
 }
