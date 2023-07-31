@@ -6,23 +6,27 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="places")
+@Table(name = "places")
 public class Place {
-	
+
 	@Id
 	@Column(name = "idplace")
 	private long id;
-	
+
 	@Column(name = "idmunicipality")
 	private long idMunicipality;
-	
+
 	@Column(name = "description")
 	private String description;
-	
+
 	@Column(name = "isdepot")
 	private int isDepot;
-	
-	public Place() {}
+
+	@Column(name = "details")
+	private String details;
+
+	public Place() {
+	}
 
 	public Place(long id) {
 		this.id = id;
@@ -58,6 +62,14 @@ public class Place {
 
 	public void setIsDepot(int isDepot) {
 		this.isDepot = isDepot;
+	}
+
+	public String getDetails() {
+		return details;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
 	}
 
 	@Override

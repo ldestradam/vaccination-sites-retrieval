@@ -62,6 +62,7 @@ public class XlsxReader {
 	private static final int CELL_PLACE_MUNICIPALITY_ID = 1;
 	private static final int CELL_PLACE_DESCRIPTION = 2;
 	private static final int CELL_PLACE_COORDINATES = 3;
+	private static final int CELL_PLACE_DETAIL = 4;
 
 	private static final int LAT = 1;
 	private static final int LON = 2;
@@ -192,7 +193,7 @@ public class XlsxReader {
 			temp.setPopulation60((long) row.getCell(CELL_MUNICIPALITY_POPULATION_60).getNumericCellValue());
 			return municipalityRepo.save(temp);
 		} catch (NumberFormatException | IllegalStateException | NullPointerException e) {
-			throw new RetrievalDataException("Error getting Municipality on row " + row.getRowNum());
+			throw new RetrievalDataException("Error getting Municipality on row " + row.getRowNum() + " - " + e.getMessage());
 		}
 
 	}
@@ -208,9 +209,11 @@ public class XlsxReader {
 			place.setIdMunicipality(municipality.getId());
 			place.setDescription(row.getCell(CELL_PLACE_DESCRIPTION).getStringCellValue());
 			place.setIsDepot(type);
+			place.setDetails(row.getCell(CELL_PLACE_DETAIL).getStringCellValue());
 			return placeRepository.save(place);
 		} catch (NumberFormatException | IllegalStateException | NullPointerException e) {
-			throw new RetrievalDataException("Error getting Place on row " + row.getRowNum());
+			e.printStackTrace();
+			throw new RetrievalDataException("Error getting Place on row " + row.getRowNum() + " - " + e.getMessage());
 		}
 	}
 
@@ -266,7 +269,7 @@ public class XlsxReader {
 			coordinates.setLongitude(latLon.get(LON));
 			return coordRepository.save(coordinates);
 		} catch (RetrievalDataException e) {
-			throw new RetrievalDataException("Error getting coordinates (invalid) on row " + row.getRowNum());
+			throw new RetrievalDataException("Error getting coordinates (invalid) on row " + row.getRowNum() + " - " + e.getMessage());
 		}
 	}
 
