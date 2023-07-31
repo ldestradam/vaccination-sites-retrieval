@@ -1,5 +1,7 @@
 package mx.com.lestradam.covid.cli;
 
+import java.util.Date;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -25,6 +27,7 @@ public class BatchApplication {
 	public void execute(String inputFile) {
 		JobParameters parameters = new JobParametersBuilder()
 				.addString("input.file", inputFile)
+				.addDate("batch.date", new Date())
 				.toJobParameters();
 		try {
 			jobLauncher.run(job, parameters);

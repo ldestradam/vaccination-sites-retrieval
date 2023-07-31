@@ -96,9 +96,13 @@ public class XlsxReader {
 			Sheet places = xssfWorkbook.getSheetAt(SHEET_PLACES);
 			Sheet coordinates = xssfWorkbook.getSheetAt(SHEET_COORDINATES);
 			Sheet depots = xssfWorkbook.getSheetAt(SHEET_DEPOT);
+			logger.info("Retrieving municipalities");
 			retrieveMunicipality(municipalities);
+			logger.info("Retrieving coordinates");
 			retrieveCoordinates(coordinates);
+			logger.info("Retrieving places");
 			retrieveDoseApplication(places);
+			logger.info("Retrieving depots");
 			retrieveDepot(depots);
 		} catch (IOException e) {
 			throw new FileReaderException("Error on reading file: " + filePath, e);
@@ -127,7 +131,6 @@ public class XlsxReader {
 	}
 
 	private void retrieveCoordinates(Sheet sheet) {
-		logger.debug("Retrieving coordinates ...");
 		Iterator<Row> rows = sheet.iterator();
 		while (rows.hasNext()) {
 			Row row = rows.next();
@@ -177,9 +180,9 @@ public class XlsxReader {
 	}
 
 	private Municipality extractMunicipality(Row row) {
-		long id = (long) row.getCell(CELL_MUNICIPALITY_ID).getNumericCellValue();
-		Municipality temp = municipalityRepo.findById(id).orElseGet(() -> new Municipality(id));
 		try {
+			long id = (long) row.getCell(CELL_MUNICIPALITY_ID).getNumericCellValue();
+			Municipality temp = municipalityRepo.findById(id).orElseGet(() -> new Municipality(id));
 			temp.setDescription(row.getCell(CELL_MUNICIPALITY_DESCRIPTION).getStringCellValue());
 			temp.setTotalpopulation((long) row.getCell(CELL_MUNICIPALITY_POPULATION_TOTAL).getNumericCellValue());
 			temp.setPopulation18((long) row.getCell(CELL_MUNICIPALITY_POPULATION_18).getNumericCellValue());
@@ -188,23 +191,27 @@ public class XlsxReader {
 			temp.setPopulation50((long) row.getCell(CELL_MUNICIPALITY_POPULATION_50).getNumericCellValue());
 			temp.setPopulation60((long) row.getCell(CELL_MUNICIPALITY_POPULATION_60).getNumericCellValue());
 			return municipalityRepo.save(temp);
-		} catch (NumberFormatException | IllegalStateException e) {
+		} catch (NumberFormatException | IllegalStateException | NullPointerException e) {
 			throw new RetrievalDataException("Error getting Municipality on row " + row.getRowNum());
 		}
 
 	}
 
 	private Place extractPlace(Row row, int type) {
-		long idMunicipality = (long) row.getCell(CELL_PLACE_MUNICIPALITY_ID).getNumericCellValue();
-		long idPlace = (long) row.getCell(CELL_PLACE_ID).getNumericCellValue();
-		Municipality municipality = municipalityRepo.findById(idMunicipality)
-				.orElseThrow(() -> new RetrievalDataException(
-						"Error getting place on row " + row.getRowNum() + ", municipality not found"));
-		Place place = placeRepository.findById(idPlace).orElse(new Place(idPlace));
-		place.setIdMunicipality(municipality.getId());
-		place.setDescription(row.getCell(CELL_PLACE_DESCRIPTION).getStringCellValue());
-		place.setIsDepot(type);
-		return placeRepository.save(place);
+		try {
+			long idMunicipality = (long) row.getCell(CELL_PLACE_MUNICIPALITY_ID).getNumericCellValue();
+			long idPlace = (long) row.getCell(CELL_PLACE_ID).getNumericCellValue();
+			Municipality municipality = municipalityRepo.findById(idMunicipality)
+					.orElseThrow(() -> new RetrievalDataException(
+							"Error getting place on row " + row.getRowNum() + ", municipality not found"));
+			Place place = placeRepository.findById(idPlace).orElse(new Place(idPlace));
+			place.setIdMunicipality(municipality.getId());
+			place.setDescription(row.getCell(CELL_PLACE_DESCRIPTION).getStringCellValue());
+			place.setIsDepot(type);
+			return placeRepository.save(place);
+		} catch (NumberFormatException | IllegalStateException | NullPointerException e) {
+			throw new RetrievalDataException("Error getting Place on row " + row.getRowNum());
+		}
 	}
 
 	private void extractApplicationDose(Row row) {
@@ -259,7 +266,7 @@ public class XlsxReader {
 			coordinates.setLongitude(latLon.get(LON));
 			return coordRepository.save(coordinates);
 		} catch (RetrievalDataException e) {
-			throw new RetrievalDataException("Error getting coordinates on row " + row.getRowNum());
+			throw new RetrievalDataException("Error getting coordinates (invalid) on row " + row.getRowNum());
 		}
 	}
 
