@@ -25,55 +25,63 @@ import mx.com.lestradam.covid.repositories.CostRepository;
 import mx.com.lestradam.covid.utils.DistanceMatrixParamsEncoder;
 
 @Service
-public class DistanceMatrixServiceImpl implements DistanceMatrixService{
-	
+public class DistanceMatrixServiceImpl implements DistanceMatrixService {
+
 	private Logger logger = LoggerFactory.getLogger(DistanceMatrixServiceImpl.class);
-	private static final int CHUNK_DESTINATIONS = 10; 
-	
+	private static final int CHUNK_DESTINATIONS = 10;
+
 	@Autowired
 	private DistanceMatrixClient client;
-	
+
 	@Autowired
 	private CoordinateRepository coordRepository;
-	
+
 	@Autowired
 	private CostRepository costRepository;
 
 	@Override
-	public void getDistanceMatrix(Coordinate coordinates) {
-		long idOrigin = coordinates.getId();
-		logger.debug("Origin: {}",coordinates);
-		String queryOrigins = getQueryLocations(Arrays.asList(coordinates));
+	public void getDistanceMatrix(Coordinate origin) {
+		logger.debug("Getting costs for origin: {}", origin);
+		String queryOrigins = getQueryLocations(Arrays.asList(origin));
 		Pageable pageable = PageRequest.of(0, CHUNK_DESTINATIONS);
-		int totalPages = coordRepository.findByIdGreaterThan(idOrigin, pageable).getTotalPages();
-		for (int i = 0; i < totalPages ; i++) {
-			pageable = PageRequest.of(i, CHUNK_DESTINATIONS);
-			Page<Coordinate> chunk = coordRepository.findByIdGreaterThan(idOrigin, pageable);
+		int totalPages = coordRepository.findByIdPlaceNot(origin.getIdPlace(), pageable).getTotalPages();
+		for (int page = 0; page < totalPages; page++) {
+			pageable = PageRequest.of(page, CHUNK_DESTINATIONS);
+			Page<Coordinate> chunk = coordRepository.findByIdPlaceNot(origin.getIdPlace(), pageable);
 			List<Coordinate> destinations = chunk.getContent();
+			if (logger.isTraceEnabled()) {
+				for (int j = 0; j < destinations.size(); j++)
+					logger.trace("Page: {} Destination: {}", page, destinations.get(j));
+			}
 			String queryDestinations = getQueryLocations(destinations);
-			DistanceMatrix matrix = client.getTravelDistanceAndTime(queryOrigins, queryDestinations );
-			DistanceMatrixRow[] rows = matrix.rows;
-			for (int j = 0; j < rows.length; j++) {
-				DistanceMatrixElement element = rows[j].elements[0];
-				Cost cost = new Cost();
-				cost.setIdPlaceFrom(coordinates.getIdPlace());
-				cost.setIdPlaceTo(destinations.get(j).getIdPlace());
-				cost.setDistance(String.valueOf(element.distance.inMeters));
-				cost.setDuration(String.valueOf(element.duration.inSeconds));
-				cost.setStatus(element.status.toString());
-				cost = costRepository.save(cost);
-				logger.debug("Travel Costs: {}", cost);
+			DistanceMatrix matrix = client.getTravelDistanceAndTime(queryDestinations, queryOrigins);
+			DistanceMatrixRow[] origins = matrix.rows;
+			for (int j = 0; j < origins.length; j++) {
+				DistanceMatrixRow row = origins[j];
+				DistanceMatrixElement[] dests = row.elements;
+				for (int k = 0; k < dests.length; k++) {
+					DistanceMatrixElement dest = dests[k];
+					Cost cost = new Cost();
+					cost.setIdPlaceFrom(origin.getIdPlace());
+					cost.setIdPlaceTo(destinations.get(k).getIdPlace());
+					cost.setDestination(matrix.destinationAddresses[k]);
+					cost.setOrigin(matrix.originAddresses[j]);
+					cost.setDistance(String.valueOf(dest.distance.inMeters));
+					cost.setDuration(String.valueOf(dest.duration.inSeconds));
+					cost.setStatus(dest.status.toString()); 
+					cost = costRepository.save(cost);
+					logger.debug("Travel Costs: {}", cost);
+				}
 			}
 		}
 	}
-	
-	
-	
+
 	private String getQueryLocations(List<Coordinate> locations) {
 		List<LatLng> latLngdestinations = locations.stream()
-			.map( coordinates -> new LatLng( Double.valueOf(coordinates.getLatitude()), Double.valueOf(coordinates.getLongitude())))
-			.collect(Collectors.toList());
+				.map(coordinates -> new LatLng(Double.valueOf(coordinates.getLatitude()),
+						Double.valueOf(coordinates.getLongitude())))
+				.collect(Collectors.toList());
 		return DistanceMatrixParamsEncoder.generateLocationEncoding(latLngdestinations);
 	}
-	
+
 }

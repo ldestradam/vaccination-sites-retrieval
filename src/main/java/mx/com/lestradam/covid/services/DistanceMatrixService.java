@@ -4,6 +4,6 @@ import mx.com.lestradam.covid.entities.Coordinate;
 
 public interface DistanceMatrixService {
 	
-	public void getDistanceMatrix(Coordinate coordinate);
+	public void getDistanceMatrix(Coordinate origin);
 
 }

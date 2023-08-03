@@ -30,6 +30,12 @@ public class Cost {
 	
 	@Column(name = "status")
 	private String status;
+	
+	@Column(name = "destination_address")
+	private String destination;
+	
+	@Column(name = "origin_address")
+	private String origin;
 
 	public long getId() {
 		return id;
@@ -79,10 +85,27 @@ public class Cost {
 		this.status = status;
 	}
 
+	public String getDestination() {
+		return destination;
+	}
+
+	public void setDestination(String destination) {
+		this.destination = destination;
+	}
+
+	public String getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(String origin) {
+		this.origin = origin;
+	}
+
 	@Override
 	public String toString() {
 		return "Cost [id=" + id + ", idPlaceFrom=" + idPlaceFrom + ", idPlaceTo=" + idPlaceTo + ", distance=" + distance
-				+ ", duration=" + duration + ", status=" + status + "]";
+				+ ", duration=" + duration + ", status=" + status + ", destination=" + destination + ", origin="
+				+ origin + "]";
 	}
 
 }

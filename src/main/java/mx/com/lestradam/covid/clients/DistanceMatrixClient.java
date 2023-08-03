@@ -21,7 +21,7 @@ public class DistanceMatrixClient {
 	public DistanceMatrix getTravelDistanceAndTime(String origins, String destinations) {
 		DistanceMatrix matrix = null;
 		try {
-			matrix  = DistanceMatrixApi.getDistanceMatrix(apiKey.getApiContext(), new String[] {destinations}, new String[] {origins}).await();		
+			matrix  = DistanceMatrixApi.getDistanceMatrix(apiKey.getApiContext(), new String[] {destinations}, new String[] {origins}).await();
 		} catch (ApiException | IOException ex) {
 			throw new DistanceMatrixException(DistanceMatrixException.REQUEST_FAILED, ex);
 		} catch (InterruptedException e) {
